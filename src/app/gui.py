@@ -210,7 +210,9 @@ class SpeedReadApp(ctk.CTk):
         try:
             if file_extension in ["txt", "pdf"]:
                 # Use the text extractor for both text and PDF files
-                words = extract_text(file_path)
+                # Get the selected citation style
+                citation_style = self.citation_style.get()
+                words = extract_text(file_path, citation_style)
                 if words:
                     self.word_list = words
                     self.current_word_index = 0

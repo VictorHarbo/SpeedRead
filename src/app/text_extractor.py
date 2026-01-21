@@ -9,12 +9,13 @@ import fitz  # PyMuPDF
 import string
 
 
-def clean_word_list(words: List[str]) -> List[str]:
+def clean_word_list(words: List[str], citation_style: str = "none") -> List[str]:
     """
     Clean the word list by removing parentheses and commas, and combining hyphenated words.
     
     Args:
         words: List of words to clean
+        citation_style: Citation style filter ("none", "notes", "parenthesis", "numeric")
         
     Returns:
         Cleaned list of words
@@ -66,12 +67,13 @@ def clean_word_list(words: List[str]) -> List[str]:
     return cleaned_words
 
 
-def extract_text_from_pdf(file_path: str) -> Optional[List[str]]:
+def extract_text_from_pdf(file_path: str, citation_style: str = "none") -> Optional[List[str]]:
     """
     Extract all text from a PDF file using PyMuPDF.
     
     Args:
         file_path: Path to the PDF file
+        citation_style: Citation style filter ("none", "notes", "parenthesis", "numeric")
         
     Returns:
         List of words, or None if extraction fails
@@ -101,7 +103,7 @@ def extract_text_from_pdf(file_path: str) -> Optional[List[str]]:
         words = full_text.split()
         
         # Clean the word list
-        words = clean_word_list(words)
+        words = clean_word_list(words, citation_style)
         
         print(f"\n{'='*60}")
         print(f"PDF TEXT EXTRACTION: {os.path.basename(file_path)}")
@@ -120,12 +122,13 @@ def extract_text_from_pdf(file_path: str) -> Optional[List[str]]:
         return None
 
 
-def extract_text_from_txt(file_path: str) -> Optional[List[str]]:
+def extract_text_from_txt(file_path: str, citation_style: str = "none") -> Optional[List[str]]:
     """
     Read text from a plain text file.
     
     Args:
         file_path: Path to the text file
+        citation_style: Citation style filter ("none", "notes", "parenthesis", "numeric")
         
     Returns:
         List of words, or None if reading fails
@@ -137,7 +140,7 @@ def extract_text_from_txt(file_path: str) -> Optional[List[str]]:
         words = text.split()
         
         # Clean the word list
-        words = clean_word_list(words)
+        words = clean_word_list(words, citation_style)
         
         print(f"\n{'='*60}")
         print(f"TEXT FILE LOADED: {os.path.basename(file_path)}")
@@ -154,12 +157,13 @@ def extract_text_from_txt(file_path: str) -> Optional[List[str]]:
         return None
 
 
-def extract_text_from_word(file_path: str) -> Optional[str]:
+def extract_text_from_word(file_path: str, citation_style: str = "none") -> Optional[str]:
     """
     Extract text from a Word document (.doc or .docx).
     
     Args:
         file_path: Path to the Word document
+        citation_style: Citation style filter ("none", "notes", "parenthesis", "numeric")
         
     Returns:
         Extracted text as a string, or None if extraction fails
@@ -170,12 +174,13 @@ def extract_text_from_word(file_path: str) -> Optional[str]:
     return None
 
 
-def extract_text(file_path: str) -> Optional[List[str]]:
+def extract_text(file_path: str, citation_style: str = "none") -> Optional[List[str]]:
     """
     Extract text from a file based on its extension.
     
     Args:
         file_path: Path to the file
+        citation_style: Citation style filter ("none", "notes", "parenthesis", "numeric")
         
     Returns:
         List of words, or None if extraction fails
@@ -187,11 +192,11 @@ def extract_text(file_path: str) -> Optional[List[str]]:
     file_extension = file_path.lower().split('.')[-1]
     
     if file_extension == 'pdf':
-        return extract_text_from_pdf(file_path)
+        return extract_text_from_pdf(file_path, citation_style)
     elif file_extension == 'txt':
-        return extract_text_from_txt(file_path)
+        return extract_text_from_txt(file_path, citation_style)
     elif file_extension in ['doc', 'docx']:
-        return extract_text_from_word(file_path)
+        return extract_text_from_word(file_path, citation_style)
     else:
         print(f"Unsupported file type: {file_extension}")
         return None
