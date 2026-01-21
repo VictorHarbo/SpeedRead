@@ -1,0 +1,29 @@
+[project]
+name = "speedread"
+version = "0.1.0"
+description = "A modern Python GUI application for speed reading"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+authors = [
+    {name = "Your Name", email = "your.email@example.com"}
+]
+dependencies = [
+    "customtkinter>=5.2.0",
+    "Pillow>=10.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pyinstaller>=6.0.0",
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_backend"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[project.scripts]
+speedread = "main:main"

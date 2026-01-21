@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.spec
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv/
+.python-version
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+*.cover
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Distribution
+dist/
+build/
+*.dmg
+*.app
+*.exe
+
+# Project specific
+*.log
+*.db
+*.sqlite
+config.json
