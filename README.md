@@ -53,12 +53,51 @@ SpeedRead/
 │   ├── main.py          # Application entry point
 │   └── app/             # Application modules
 │       ├── __init__.py
-│       └── gui.py       # GUI components
+│       ├── gui.py       # GUI components
+│       └── text_extractor.py  # Text extraction
+├── tests/               # Unit tests
+│   ├── __init__.py
+│   ├── test_main.py
+│   ├── test_gui.py
+│   └── test_text_extractor.py
 ├── requirements.txt     # Python dependencies
+├── pytest.ini          # Pytest configuration
 ├── pyproject.toml      # Project configuration
 ├── .gitignore          # Git ignore rules
 └── README.md           # This file
 ```
+
+## Testing
+
+Comprehensive unit tests are provided for all modules.
+
+### Running Tests
+
+Using pytest (recommended):
+```bash
+# Install testing dependencies
+pip install pytest pytest-cov pytest-mock
+
+# Run all tests
+pytest
+
+# Run with coverage report
+pytest --cov=src --cov-report=term-missing
+
+# Run specific test file
+pytest tests/test_text_extractor.py
+```
+
+Using unittest:
+```bash
+# Run all tests
+python -m unittest discover tests -v
+
+# Run specific test file
+python -m unittest tests.test_text_extractor -v
+```
+
+See [tests/README.md](tests/README.md) for detailed testing documentation.
 
 ## Development
 
