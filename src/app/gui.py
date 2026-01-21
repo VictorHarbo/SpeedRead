@@ -78,18 +78,19 @@ class SpeedReadApp(ctk.CTk):
         )
         self.selected_file_label.grid(row=2, column=0, padx=20, pady=(0, 10))
         
-        # Text display area
-        self.text_display = ctk.CTkTextbox(
-            self,
-            font=ctk.CTkFont(size=32),
+        # Text display area - use a frame with label for non-scrollable display
+        self.text_display_frame = ctk.CTkFrame(self, fg_color="white", height=100)
+        self.text_display_frame.grid(row=3, column=0, padx=40, pady=20, sticky="ew")
+        self.text_display_frame.grid_propagate(False)
+        
+        self.text_display = ctk.CTkLabel(
+            self.text_display_frame,
+            text="Select a file to begin",
+            font=ctk.CTkFont(family="Courier", size=32),
             fg_color="white",
-            border_width=0,
-            height=100
+            text_color="black"
         )
-        self.text_display.grid(row=3, column=0, padx=40, pady=20, sticky="ew")
-        self.text_display.tag_config("center", justify="center")
-        self.text_display.tag_config("red", foreground="red")
-        self.text_display.insert("1.0", "Select a file to begin", "center")
+        self.text_display.place(relx=0.5, rely=0.5, anchor="center")
         
         # Controls
         controls_frame = ctk.CTkFrame(self, fg_color="white")
@@ -176,15 +177,41 @@ class SpeedReadApp(ctk.CTk):
                 if words:
                     self.word_list = words
                     self.current_word_index = 0
-                    self.text_display.delete("1.0", "end")
-                    self.text_display.insert("1.0", f"{len(words)} words loaded", "center")
+                    # Clear display frame
+                    for widget in self.text_display_frame.winfo_children():
+                        widget.destroy()
+                    # Show status
+                    status_label = ctk.CTkLabel(
+                        self.text_display_frame,
+                        text=f"{len(words)} words loaded",
+                        font=ctk.CTkFont(family="Courier", size=32),
+                        fg_color="white",
+                        text_color="black"
+                    )
+                    status_label.place(relx=0.5, rely=0.5, anchor="center")
                 else:
-                    self.text_display.delete("1.0", "end")
-                    self.text_display.insert("1.0", "Error loading file", "center")
+                    for widget in self.text_display_frame.winfo_children():
+                        widget.destroy()
+                    error_label = ctk.CTkLabel(
+                        self.text_display_frame,
+                        text="Error loading file",
+                        font=ctk.CTkFont(family="Courier", size=32),
+                        fg_color="white",
+                        text_color="black"
+                    )
+                    error_label.place(relx=0.5, rely=0.5, anchor="center")
             else:
                 # For Word files and others, show a message
-                self.text_display.delete("1.0", "end")
-                self.text_display.insert("1.0", "Format not supported yet", "center")
+                for widget in self.text_display_frame.winfo_children():
+                    widget.destroy()
+                msg_label = ctk.CTkLabel(
+                    self.text_display_frame,
+                    text="Format not supported yet",
+                    font=ctk.CTkFont(family="Courier", size=32),
+                    fg_color="white",
+                    text_color="black"
+                )
+                msg_label.place(relx=0.5, rely=0.5, anchor="center")
         except Exception as e:
             self.selected_file_label.configure(text=f"Error: {str(e)}", text_color="red")
             print(f"Error loading file: {str(e)}")
@@ -229,7 +256,8 @@ class SpeedReadApp(ctk.CTk):
         print(f"Reading started at {self.reading_speed_wpm} WPM")
         
         # Clear display and show first word
-        self.text_display.delete("1.0", "end")
+        for widget in self.text_display_frame.winfo_children():
+            widget.destroy()
         self.show_next_word()
     
     def show_next_word(self):
@@ -237,33 +265,27 @@ class SpeedReadApp(ctk.CTk):
         if not self.is_reading or self.current_word_index >= len(self.word_list):
             # Reading finished or stopped
             if self.current_word_index >= len(self.word_list):
-                self.text_display.delete("1.0", "end")
-                self.text_display.insert("1.0", "Reading complete!", "center")
+                self.text_display.configure(text="Reading complete!")
                 print("Reading complete!")
             self.stop_reading()
             return
         
         # Display current word with center letter highlighted
         current_word = self.word_list[self.current_word_index]
-        self.text_display.delete("1.0", "end")
         
-        # Calculate center position
+        # Calculate center position of the word
         word_length = len(current_word)
         center_index = word_length // 2
         
-        # Split word into three parts: before center, center letter, after center
+        # Split word into parts
         before = current_word[:center_index]
         center_letter = current_word[center_index]
         after = current_word[center_index + 1:]
         
-        # Insert with center alignment
-        self.text_display.insert("1.0", before + center_letter + after, "center")
-        
-        # Apply red color to the center letter
-        # Calculate position in the text widget (1.0 is line 1, char 0)
-        start_pos = f"1.{center_index}"
-        end_pos = f"1.{center_index + 1}"
-        self.text_display.tag_add("red", start_pos, end_pos)
+        # Create the display text with red letter using unicode or simple concatenation
+        # Since we can't color individual letters in a label, we'll use three separate labels
+        # positioned horizontally
+        self.update_word_display(before, center_letter, after)
         
         # Move to next word
         self.current_word_index += 1
@@ -273,6 +295,56 @@ class SpeedReadApp(ctk.CTk):
         
         # Schedule next word
         self.after(delay_ms, self.show_next_word)
+    
+    def update_word_display(self, before, center, after):
+        """Update the word display with colored center letter."""
+        # Clear any existing word widgets
+        for widget in self.text_display_frame.winfo_children():
+            widget.destroy()
+        
+        # Create labels for each part with monospace font
+        font = ctk.CTkFont(family="Courier", size=32)
+        
+        # Get frame width to calculate center position
+        self.text_display_frame.update_idletasks()
+        frame_center_x = self.text_display_frame.winfo_width() / 2
+        
+        # With monospace font, estimate character width (roughly 0.6 * font size)
+        char_width = 19  # Approximate for Courier size 32
+        
+        # Calculate pixel positions
+        # Center letter should be at frame_center_x
+        center_label = ctk.CTkLabel(
+            self.text_display_frame, 
+            text=center, 
+            font=font, 
+            fg_color="white", 
+            text_color="red"
+        )
+        center_label.place(x=frame_center_x, y=50, anchor="center")
+        
+        # Before text ends just before center letter
+        if before:
+            before_width = len(before) * char_width
+            before_label = ctk.CTkLabel(
+                self.text_display_frame, 
+                text=before, 
+                font=font, 
+                fg_color="white", 
+                text_color="black"
+            )
+            before_label.place(x=frame_center_x - char_width/2, y=50, anchor="e")
+        
+        # After text starts just after center letter
+        if after:
+            after_label = ctk.CTkLabel(
+                self.text_display_frame, 
+                text=after, 
+                font=font, 
+                fg_color="white", 
+                text_color="black"
+            )
+            after_label.place(x=frame_center_x + char_width/2, y=50, anchor="w")
     
     def stop_reading(self):
         """Stop the speed reading session."""
