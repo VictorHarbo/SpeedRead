@@ -15,7 +15,15 @@ class SpeedReadApp(ctk.CTk):
         
         # Configure window
         self.title("SpeedRead")
-        self.geometry("600x400")
+        
+        # Center window on screen
+        window_width = 600
+        window_height = 400
+        screen_width = self.winfo_screenwidth()
+        screen_height = self.winfo_screenheight()
+        x = (screen_width - window_width) // 2
+        y = (screen_height - window_height) // 2
+        self.geometry(f"{window_width}x{window_height}+{x}+{y}")
         
         # Set theme to light with white background
         ctk.set_appearance_mode("light")
