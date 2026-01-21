@@ -4,15 +4,7 @@ Contains the main application window and GUI components.
 """
 
 import customtkinter as ctk
-from typing import Optional
 from .text_extractor import extract_text
-try:
-    from tkinterdnd2 import DND_FILES, TkinterDnD
-    DRAG_DROP_AVAILABLE = True
-except ImportError:
-    DRAG_DROP_AVAILABLE = False
-    print("Warning: tkinterdnd2 not installed. Drag and drop will not work.")
-    print("Install with: pip install tkinterdnd2")
 
 
 class SpeedReadApp(ctk.CTk):
@@ -21,177 +13,120 @@ class SpeedReadApp(ctk.CTk):
     def __init__(self):
         super().__init__()
         
-        # Try to enable drag and drop support
-        if DRAG_DROP_AVAILABLE:
-            try:
-                self.drop_target_register(DND_FILES)
-            except:
-                pass
-        
         # Configure window
         self.title("SpeedRead")
-        self.geometry("800x600")
+        self.geometry("600x400")
         
-        # Set theme
+        # Set theme to light with white background
         ctk.set_appearance_mode("light")
-        ctk.set_default_color_theme("blue")
         
-        # Configure grid layout
+        # Configure window background to white
+        self.configure(fg_color="white")
+        
+        # Configure grid layout - single column
         self.grid_columnconfigure(0, weight=1)
-        self.grid_rowconfigure(0, weight=1)
+        self.grid_rowconfigure(2, weight=1)
         
-        # Create main frame
-        self.main_frame = ctk.CTkFrame(self)
-        self.main_frame.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")
-        self.main_frame.grid_columnconfigure(0, weight=1)
-        self.main_frame.grid_columnconfigure(1, weight=2)
-        self.main_frame.grid_rowconfigure(1, weight=1)
-        
-        # Create title label (spans both columns)
+        # Title
         self.title_label = ctk.CTkLabel(
-            self.main_frame,
+            self,
             text="SpeedRead",
-            font=ctk.CTkFont(size=32, weight="bold")
+            font=ctk.CTkFont(size=28, weight="bold"),
+            text_color="black",
+            fg_color="white"
         )
-        self.title_label.grid(row=0, column=0, columnspan=2, padx=20, pady=(20, 10))
-        
-        # Create left frame for file selection
-        self.left_frame = ctk.CTkFrame(self.main_frame)
-        self.left_frame.grid(row=1, column=0, padx=(20, 10), pady=20, sticky="nsew")
-        self.left_frame.grid_rowconfigure(1, weight=1)
-        
-        # File selection title
-        self.file_label = ctk.CTkLabel(
-            self.left_frame,
-            text="Select File",
-            font=ctk.CTkFont(size=18, weight="bold")
-        )
-        self.file_label.grid(row=0, column=0, padx=20, pady=(20, 10))
-        
-        # Drop zone
-        self.drop_zone = ctk.CTkTextbox(
-            self.left_frame,
-            width=250,
-            height=200,
-            font=ctk.CTkFont(size=12)
-        )
-        self.drop_zone.grid(row=1, column=0, padx=20, pady=10, sticky="nsew")
-        self.drop_zone.insert("1.0", "Drop a file here\n\n(Text, Word, or PDF)\n\nor\n\nClick 'Choose File' below")
-        self.drop_zone.configure(state="disabled")
-        
-        # Enable drag and drop on the drop zone
-        if DRAG_DROP_AVAILABLE:
-            try:
-                self.drop_zone.drop_target_register(DND_FILES)
-                self.drop_zone.dnd_bind('<<Drop>>', self.on_drop)
-            except Exception as e:
-                print(f"Could not enable drag and drop: {e}")
+        self.title_label.grid(row=0, column=0, padx=20, pady=(30, 20))
         
         # Choose file button
         self.choose_file_button = ctk.CTkButton(
-            self.left_frame,
+            self,
             text="Choose File",
             command=self.choose_file,
             width=200,
             height=40,
-            font=ctk.CTkFont(size=14)
+            font=ctk.CTkFont(size=14),
+            fg_color="black",
+            hover_color="gray30"
         )
-        self.choose_file_button.grid(row=2, column=0, padx=20, pady=(10, 20))
+        self.choose_file_button.grid(row=1, column=0, padx=20, pady=10)
         
         # Selected file label
         self.selected_file_label = ctk.CTkLabel(
-            self.left_frame,
+            self,
             text="No file selected",
             font=ctk.CTkFont(size=12),
-            text_color="gray"
+            text_color="gray50",
+            fg_color="white"
         )
-        self.selected_file_label.grid(row=3, column=0, padx=20, pady=(0, 20))
-        
-        # Create right frame for text display
-        self.right_frame = ctk.CTkFrame(self.main_frame)
-        self.right_frame.grid(row=1, column=1, padx=(10, 20), pady=20, sticky="nsew")
-        self.right_frame.grid_rowconfigure(1, weight=1)
-        
-        # Text display title
-        self.display_label = ctk.CTkLabel(
-            self.right_frame,
-            text="Text Display",
-            font=ctk.CTkFont(size=18, weight="bold")
-        )
-        self.display_label.grid(row=0, column=0, padx=20, pady=(20, 10))
+        self.selected_file_label.grid(row=2, column=0, padx=20, pady=(0, 10))
         
         # Text display area
         self.text_display = ctk.CTkTextbox(
-            self.right_frame,
-            height=50,
-            font=ctk.CTkFont(size=16)
+            self,
+            font=ctk.CTkFont(size=32),
+            fg_color="white",
+            border_width=0,
+            height=100
         )
-        self.text_display.grid(row=1, column=0, padx=20, pady=10, sticky="ew")
+        self.text_display.grid(row=3, column=0, padx=40, pady=20, sticky="ew")
         self.text_display.tag_config("center", justify="center")
         self.text_display.tag_config("red", foreground="red")
-        self.text_display.insert("1.0", "Welcome to SpeedRead!\n\nSelect a file to begin.", "center")
+        self.text_display.insert("1.0", "Select a file to begin", "center")
         
-        # Create control frame (spans both columns, at bottom)
-        self.control_frame = ctk.CTkFrame(self.main_frame)
-        self.control_frame.grid(row=2, column=0, columnspan=2, padx=20, pady=(0, 10))
+        # Controls
+        controls_frame = ctk.CTkFrame(self, fg_color="white")
+        controls_frame.grid(row=4, column=0, padx=20, pady=(0, 10))
         
-        # Create speed slider
         self.speed_label = ctk.CTkLabel(
-            self.control_frame,
-            text="Reading Speed (WPM):",
-            font=ctk.CTkFont(size=14)
+            controls_frame,
+            text="WPM:",
+            font=ctk.CTkFont(size=12),
+            text_color="black",
+            fg_color="white"
         )
-        self.speed_label.grid(row=0, column=0, padx=10, pady=10)
+        self.speed_label.grid(row=0, column=0, padx=(0, 5))
         
         self.speed_entry = ctk.CTkEntry(
-            self.control_frame,
-            width=100,
-            font=ctk.CTkFont(size=14),
-            justify="center"
+            controls_frame,
+            width=60,
+            font=ctk.CTkFont(size=12),
+            justify="center",
+            fg_color="white",
+            border_color="gray70"
         )
-        self.speed_entry.insert(0, "120")
-        self.speed_entry.grid(row=0, column=1, padx=10, pady=10)
-        
-        # Create buttons
-        self.button_frame = ctk.CTkFrame(self.main_frame)
-        self.button_frame.grid(row=3, column=0, columnspan=2, padx=20, pady=(0, 20))
+        self.speed_entry.insert(0, "300")
+        self.speed_entry.grid(row=0, column=1, padx=5)
         
         self.start_button = ctk.CTkButton(
-            self.button_frame,
-            text="Start Reading",
+            controls_frame,
+            text="Start",
             command=self.start_reading,
-            width=150,
-            height=40,
-            font=ctk.CTkFont(size=14)
+            width=80,
+            height=32,
+            font=ctk.CTkFont(size=12),
+            fg_color="black",
+            hover_color="gray30"
         )
-        self.start_button.grid(row=0, column=0, padx=10, pady=10)
+        self.start_button.grid(row=0, column=2, padx=5)
         
         self.stop_button = ctk.CTkButton(
-            self.button_frame,
+            controls_frame,
             text="Stop",
             command=self.stop_reading,
-            width=150,
-            height=40,
-            font=ctk.CTkFont(size=14),
+            width=80,
+            height=32,
+            font=ctk.CTkFont(size=12),
+            fg_color="gray70",
+            hover_color="gray50",
             state="disabled"
         )
-        self.stop_button.grid(row=0, column=1, padx=10, pady=10)
+        self.stop_button.grid(row=0, column=3, padx=5)
         
         self.is_reading = False
         self.selected_file_path = None
         self.word_list = []
         self.current_word_index = 0
         self.reading_speed_wpm = 120  # Words per minute
-    
-    def on_drop(self, event):
-        """Handle file drop event."""
-        # Get the dropped file path
-        file_path = event.data
-        # Remove curly braces if present (Windows format)
-        file_path = file_path.strip('{}').strip()
-        
-        if file_path:
-            self.load_file(file_path)
     
     def load_file(self, file_path):
         """Load a file and update the UI."""
@@ -224,15 +159,14 @@ class SpeedReadApp(ctk.CTk):
                     self.word_list = words
                     self.current_word_index = 0
                     self.text_display.delete("1.0", "end")
-                    self.text_display.insert("1.0", f"File loaded: {len(words)} words\nPress 'Start Reading' to begin", "center")
+                    self.text_display.insert("1.0", f"{len(words)} words loaded", "center")
                 else:
                     self.text_display.delete("1.0", "end")
-                    self.text_display.insert("1.0", f"Error: Could not extract text from {file_type} file.", "center")
+                    self.text_display.insert("1.0", "Error loading file", "center")
             else:
                 # For Word files and others, show a message
                 self.text_display.delete("1.0", "end")
-                self.text_display.insert("1.0", f"{file_type} file selected: {filename}\n\n"
-                                        f"Processing for {file_type} files will be implemented soon.", "center")
+                self.text_display.insert("1.0", "Format not supported yet", "center")
         except Exception as e:
             self.selected_file_label.configure(text=f"Error: {str(e)}", text_color="red")
             print(f"Error loading file: {str(e)}")
