@@ -97,7 +97,3 @@ If you get a `ModuleNotFoundError: No module named '_tkinter'` error, your Pytho
    ```bash
    pip install -r requirements.txt
    ```
-
-## License
-
-MIT License - feel free to use and modify as needed.
