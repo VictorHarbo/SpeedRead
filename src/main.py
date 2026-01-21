@@ -4,8 +4,11 @@ A modern speed reading application with a GUI built using CustomTkinter.
 """
 
 import sys
+from setproctitle import setproctitle
 from app import SpeedReadApp
 
+# Set the application name for macOS dock
+setproctitle('SpeedRead')
 
 def main():
     """Main application entry point."""

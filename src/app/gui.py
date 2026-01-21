@@ -4,6 +4,8 @@ Contains the main application window and GUI components.
 """
 
 import customtkinter as ctk
+from tkinter import PhotoImage
+import os
 from .text_extractor import extract_text
 
 
@@ -15,6 +17,14 @@ class SpeedReadApp(ctk.CTk):
         
         # Configure window
         self.title("SpeedRead")
+        
+        # Set application icon
+        try:
+            icon_path = os.path.join(os.path.dirname(__file__), "..", "assets", "speedreadLogo_white_large.png")
+            icon = PhotoImage(file=icon_path)
+            self.iconphoto(True, icon)
+        except Exception as e:
+            print(f"Could not load icon: {e}")
         
         # Center window on screen
         window_width = 600
