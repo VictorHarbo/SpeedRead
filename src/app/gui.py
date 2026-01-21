@@ -92,9 +92,46 @@ class SpeedReadApp(ctk.CTk):
         )
         self.text_display.place(relx=0.5, rely=0.5, anchor="center")
         
+        # Citation style selector
+        citation_frame = ctk.CTkFrame(self, fg_color="white")
+        citation_frame.grid(row=4, column=0, padx=20, pady=(10, 10))
+        
+        self.citation_label = ctk.CTkLabel(
+            citation_frame,
+            text="Citation Style:",
+            font=ctk.CTkFont(size=12),
+            text_color="black",
+            fg_color="white"
+        )
+        self.citation_label.grid(row=0, column=0, padx=(0, 10))
+        
+        # Citation style variable
+        self.citation_style = ctk.StringVar(value="none")
+        
+        # Citation style radio buttons
+        citation_options = [
+            ("None", "none"),
+            ("Notes", "notes"),
+            ("Parenthesis", "parenthesis"),
+            ("Numeric", "numeric")
+        ]
+        
+        for idx, (text, value) in enumerate(citation_options):
+            radio_btn = ctk.CTkRadioButton(
+                citation_frame,
+                text=text,
+                variable=self.citation_style,
+                value=value,
+                font=ctk.CTkFont(size=12),
+                text_color="black",
+                fg_color="black",
+                hover_color="gray30"
+            )
+            radio_btn.grid(row=0, column=idx+1, padx=5)
+        
         # Controls
         controls_frame = ctk.CTkFrame(self, fg_color="white")
-        controls_frame.grid(row=4, column=0, padx=20, pady=(0, 10))
+        controls_frame.grid(row=5, column=0, padx=20, pady=(0, 10))
         
         self.speed_label = ctk.CTkLabel(
             controls_frame,
