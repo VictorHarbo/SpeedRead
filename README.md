@@ -1,4 +1,4 @@
-<h1 align="center">
+<h1>
   <img src="src/assets/speedreadLogo.png" alt="Logo" width="40" />
   SpeedRead
 </h1>
