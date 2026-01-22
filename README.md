@@ -1,4 +1,7 @@
-# SpeedRead
+<h1 align="center">
+  <img src="src/assets/speedreadLogo.png" alt="Logo" width="40" />
+  SpeedRead
+</h1>
 
 A modern Python GUI application for speed reading practice and improvement.
 
